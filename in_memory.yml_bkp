@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Gather Facts from Openstack
+    os_server_info:
+    register: osinfo
+  
+  - name: Print registered variable os_instances
+    debug: 
+	msg: "{{ item.accessIPv4 }}"
+    loop: "{{ osinfo.openstack_servers }}"
+

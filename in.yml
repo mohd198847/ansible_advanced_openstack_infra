@@ -1,0 +1,44 @@
+---
+- name: Play to create run time inventory
+  hosts: localhost
+  tasks:       
+    - name: Get server info
+      os_server_info:
+      register: instances
+
+    #- debug: var=instances
+
+    - name: Build in_memory inventory
+      add_host:
+        host: "{{ item.public_v4 }}"
+        group: "{{ item.metadata.group }}"
+        ansible_user: cloud-user
+        ansible_ssh_private_key_file: ~/.ssh/ansible_ssh_key
+      loop: "{{ instances.openstack_servers }}"
+
+    - debug: var=groups
+
+- name: Play to ping
+  hosts: apps_servers,database_servers,load_balancers
+  tasks:       
+    - ping:
+
+- name: Gather database facts
+  hosts: database_servers
+  gather_facts: true
+
+  tasks: []
+
+- name: Setup Repos
+  hosts: app_servers:load_balancers:database_servers
+  gather_facts: false
+  become: true
+  tags:
+    - common
+
+  tasks:
+
+    - name: Copy repo file
+      copy:
+        src: open_three-tier-app.repo
+        dest: /etc/yum.repos.d/open_three-tier-app.repo

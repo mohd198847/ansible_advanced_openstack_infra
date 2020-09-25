@@ -2,6 +2,8 @@
 
 # - import_playbook: setup-jumpbox.yml
 
+- import_playbook: in.yml
+
 - import_playbook: manage-flavors.yml
 - import_playbook: manage-images.yml
 - import_playbook: manage-keypairs.yml
